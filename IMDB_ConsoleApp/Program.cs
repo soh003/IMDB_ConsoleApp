@@ -4,7 +4,7 @@ using Microsoft.Data.SqlClient;
 
 class Program
 {
-    static string connectionString = "Server=localhost;Database=IMDB_DB;Trusted_Connection=True;TrustServerCertificate=True;";
+    static string connectionString = "Server=localhost;Database=IMDB_3;Trusted_Connection=True;TrustServerCertificate=True;";
 
 
     static void Main()
@@ -81,9 +81,12 @@ class Program
         Console.Write("Indtast runtimeMinutes (eller tryk Enter for NULL): ");
         int? runtimeMinutes = ReadNullableInt();
 
+        Console.Write("Indtast genrer (kommasepareret, f.eks. Action,Drama): ");
+        string genres = Console.ReadLine();
+
         using (SqlConnection conn = new SqlConnection(connectionString))
         {
-            SqlCommand cmd = new SqlCommand("sp_InsertMovie", conn);
+            SqlCommand cmd = new SqlCommand("sp_InsertMovieSimple", conn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@tconst", tconst);
             cmd.Parameters.AddWithValue("@titleType", titleType);
@@ -93,6 +96,7 @@ class Program
             cmd.Parameters.AddWithValue("@startYear", (object)startYear ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@endYear", (object)endYear ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@runtimeMinutes", (object)runtimeMinutes ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@genres", string.IsNullOrWhiteSpace(genres) ? DBNull.Value : genres);
 
             conn.Open();
             cmd.ExecuteNonQuery();
@@ -142,6 +146,9 @@ class Program
         Console.Write("Indtast deathYear (eller tryk Enter for NULL): ");
         int? deathYear = ReadNullableInt();
 
+        Console.Write("Indtast knownForTitles (kommasepareret tconst, fx tt1234567,tt7654321): ");
+        string knownFor = Console.ReadLine();
+
         using (SqlConnection conn = new SqlConnection(connectionString))
         {
             SqlCommand cmd = new SqlCommand("sp_InsertPerson", conn);
@@ -150,6 +157,7 @@ class Program
             cmd.Parameters.AddWithValue("@primaryName", primaryName);
             cmd.Parameters.AddWithValue("@birthYear", (object)birthYear ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@deathYear", (object)deathYear ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@knownForTitles", string.IsNullOrWhiteSpace(knownFor) ? DBNull.Value : knownFor);
 
             conn.Open();
             cmd.ExecuteNonQuery();
